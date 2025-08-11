@@ -1,6 +1,5 @@
 require(["esri/rest/find", "esri/rest/support/FindParameters"], function (find, FindParameters) {
   const calciteLoader = document.getElementById("calciteLoader");
-
   // Create a URL pointing to a map service
   const findUrl = "https://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer";
 
@@ -26,6 +25,7 @@ require(["esri/rest/find", "esri/rest/support/FindParameters"], function (find, 
 
   // Executes when the promise from find.execute() resolves
   function showResults(response) {
+
     const results = response.results;
 
     // Clear the cells and rows of the table to make room for new results
@@ -84,6 +84,8 @@ require(["esri/rest/find", "esri/rest/support/FindParameters"], function (find, 
   // Executes each time the promise from find.execute() is rejected.
   function rejectedPromise(error) {
     console.error("Promise didn't resolve: ", error.message);
+    calciteLoader.hidden = true;
+      errorMsg.textContent = "Error: " + error.message;
   }
 
   // Run doFind() when button is clicked
