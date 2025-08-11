@@ -1,15 +1,16 @@
 require(["esri/rest/find", "esri/rest/support/FindParameters"], function (find, FindParameters) {
   const calciteLoader = document.getElementById("calciteLoader");
-  const errorMsg = document.getElementById("errorMsg");
-
   // Create a URL pointing to a map service
   const findUrl = "https://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer";
 
   // Set parameters to only query the Counties layer by name
   const params = new FindParameters({
     layerIds: [0],
-    searchFields: ["areaname"]
+    searchFields: ["areaname"],
   });
+
+  // Cache the results table element for reuse
+  const resultsTable = document.getElementById("tbl");
 
   // Executes on each button click
   function doFind() {
@@ -22,12 +23,9 @@ require(["esri/rest/find", "esri/rest/support/FindParameters"], function (find, 
     find.find(findUrl, params).then(showResults).catch(rejectedPromise);
   }
 
-  const resultsTable = document.getElementById("tbl");
-
   // Executes when the promise from find.execute() resolves
   function showResults(response) {
-    // Clear any previous error message on success
-      errorMsg.textContent = "";
+
     const results = response.results;
 
     // Clear the cells and rows of the table to make room for new results
@@ -41,35 +39,45 @@ require(["esri/rest/find", "esri/rest/support/FindParameters"], function (find, 
     }
 
     // Set up row for descriptive headers to display results
-    let topRow = resultsTable.insertRow(0);
-    let cell1 = topRow.insertCell(0);
-    let cell2 = topRow.insertCell(1);
-    let cell3 = topRow.insertCell(2);
-    let cell4 = topRow.insertCell(3);
-    cell1.innerHTML = "<b>City Name</b>";
-    cell2.innerHTML = "<b>State Abbreviation</b>";
-    cell3.innerHTML = "<b>Population (2000)</b>";
-    cell4.innerHTML = "<b>Is state capital?</b>";
+    const topRow = resultsTable.insertRow(0);
+    const header1 = topRow.insertCell(0);
+    const header2 = topRow.insertCell(1);
+    const header3 = topRow.insertCell(2);
+    const header4 = topRow.insertCell(3);
+    header1.innerHTML = "<b>City Name</b>";
+    header2.innerHTML = "<b>State Abbreviation</b>";
+    header3.innerHTML = "<b>Population (2000)</b>";
+    header4.innerHTML = "<b>Is state capital?</b>";
+
+    // Build rows in a document fragment to minimize DOM reflows
+    const fragment = document.createDocumentFragment();
 
     // Loop through each result in the response and add as a row in the table
-    results.forEach(function (findResult, i) {
+    results.forEach(function (findResult) {
       // Get each value of the desired attributes
       const city = findResult.feature.attributes["AREANAME"];
       const state = findResult.feature.attributes["ST"];
       const pop2000 = findResult.feature.attributes["POP2000"];
       const capital = findResult.feature.attributes["CAPITAL"];
 
-      // Add each resulting value to the table as a row
-      const row = resultsTable.insertRow(i + 1);
-      let cell1 = row.insertCell(0);
-      let cell2 = row.insertCell(1);
-      let cell3 = row.insertCell(2);
-      let cell4 = row.insertCell(3);
-      cell1.innerHTML = city;
-      cell2.innerHTML = state;
-      cell3.innerHTML = pop2000;
-      cell4.innerHTML = capital;
+      // Create each resulting value as a row
+      const row = document.createElement("tr");
+      const cell1 = document.createElement("td");
+      const cell2 = document.createElement("td");
+      const cell3 = document.createElement("td");
+      const cell4 = document.createElement("td");
+      cell1.textContent = city;
+      cell2.textContent = state;
+      cell3.textContent = pop2000;
+      cell4.textContent = capital;
+      row.appendChild(cell1);
+      row.appendChild(cell2);
+      row.appendChild(cell3);
+      row.appendChild(cell4);
+      fragment.appendChild(row);
     });
+
+    resultsTable.appendChild(fragment);
     calciteLoader.hidden = true;
   }
 
