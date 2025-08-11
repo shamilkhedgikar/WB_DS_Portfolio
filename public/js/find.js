@@ -35,11 +35,14 @@ function showResults(response) {
   const results = response.results;
 
   // Clear the cells and rows of the table to make room for new results
-  resultsTable.innerHTML = "";
+  resultsTable.textContent = "";
 
   // If no results are returned from the find, notify the user
   if (results.length === 0) {
-    resultsTable.innerHTML = "<i>No results found</i>";
+    resultsTable.textContent = "";
+    const italic = document.createElement("i");
+    italic.textContent = "No results found";
+    resultsTable.appendChild(italic);
     calciteLoader.hidden = true;
     return;
   }
@@ -50,10 +53,18 @@ function showResults(response) {
   let cell2 = topRow.insertCell(1);
   let cell3 = topRow.insertCell(2);
   let cell4 = topRow.insertCell(3);
-  cell1.innerHTML = "<b>City Name</b>";
-  cell2.innerHTML = "<b>State Abbreviation</b>";
-  cell3.innerHTML = "<b>Population (2000)</b>";
-  cell4.innerHTML = "<b>Is state capital?</b>";
+  const header1 = document.createElement("b");
+  header1.textContent = "City Name";
+  cell1.appendChild(header1);
+  const header2 = document.createElement("b");
+  header2.textContent = "State Abbreviation";
+  cell2.appendChild(header2);
+  const header3 = document.createElement("b");
+  header3.textContent = "Population (2000)";
+  cell3.appendChild(header3);
+  const header4 = document.createElement("b");
+  header4.textContent = "Is state capital?";
+  cell4.appendChild(header4);
 
   // Loop through each result in the response and add as a row in the table
   results.forEach(function (findResult, i) {
@@ -69,10 +80,10 @@ function showResults(response) {
     let cell2 = row.insertCell(1);
     let cell3 = row.insertCell(2);
     let cell4 = row.insertCell(3);
-    cell1.innerHTML = city;
-    cell2.innerHTML = state;
-    cell3.innerHTML = pop2000;
-    cell4.innerHTML = capital;
+    cell1.textContent = city;
+    cell2.textContent = state;
+    cell3.textContent = pop2000;
+    cell4.textContent = capital;
   });
   calciteLoader.hidden = true;
 }
