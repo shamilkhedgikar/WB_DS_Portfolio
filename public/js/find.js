@@ -2,6 +2,10 @@ import find from "esri/rest/find";
 import FindParameters from "esri/rest/support/FindParameters";
 
 const calciteLoader = document.getElementById("calciteLoader");
+const resultsTable = document.getElementById("tbl");
+const findButton = document.getElementById("findBtn");
+const inputTxt = document.getElementById("inputTxt");
+const errorMsg = document.getElementById("errorMsg");
 
 // Create a URL pointing to a map service
 const findUrl = "https://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer";
@@ -14,10 +18,18 @@ const params = new FindParameters({
 
 // Executes on each button click
 async function doFind() {
-  // Display loading gif to provide the user feedback on search progress
-  calciteLoader.hidden = false;
+  if (calciteLoader) {
+    calciteLoader.hidden = false;
+  }
+  if (errorMsg) {
+    errorMsg.textContent = "";
+  }
+  if (!inputTxt) {
+    console.error("inputTxt element not found");
+    return;
+  }
   // Set the search text to the value of the input box
-  params.searchText = document.getElementById("inputTxt").value;
+  params.searchText = inputTxt.value;
   // The find() performs a LIKE SQL query based on the provided text value
   // showResults() is called once the promise returned here resolves
   try {
@@ -28,11 +40,16 @@ async function doFind() {
   }
 }
 
-const resultsTable = document.getElementById("tbl");
-
 // Executes when the promise from find.execute() resolves
 function showResults(response) {
   const results = response.results;
+
+  if (!resultsTable) {
+    if (calciteLoader) {
+      calciteLoader.hidden = true;
+    }
+    return;
+  }
 
   // Clear the cells and rows of the table to make room for new results
   resultsTable.textContent = "";
@@ -85,13 +102,21 @@ function showResults(response) {
     cell3.textContent = pop2000;
     cell4.textContent = capital;
   });
-  calciteLoader.hidden = true;
+
+  if (calciteLoader) {
+    calciteLoader.hidden = true;
+  }
 }
 
 // Executes each time the promise from find.execute() is rejected.
 function rejectedPromise(error) {
   console.error("Promise didn't resolve: ", error.message);
+  if (calciteLoader) {
+    calciteLoader.hidden = true;
+  }
+  if (errorMsg) {
+    errorMsg.textContent = `Error: ${error.message}`;
+  }
 }
 
-// Run doFind() when button is clicked
 document.getElementById("findBtn").addEventListener("click", doFind);
