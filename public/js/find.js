@@ -1,4 +1,4 @@
-import find from "https://js.arcgis.com/4.32/@arcgis/core/rest/find.js";
+import * as find from "https://js.arcgis.com/4.32/@arcgis/core/rest/find.js";
 import FindParameters from "https://js.arcgis.com/4.32/@arcgis/core/rest/support/FindParameters.js";
 
 const calciteLoader = document.getElementById("calciteLoader");
