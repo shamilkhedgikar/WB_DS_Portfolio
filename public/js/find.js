@@ -9,13 +9,15 @@ require(["esri/rest/find", "esri/rest/support/FindParameters"], function (find, 
     searchFields: ["areaname"],
   });
 
-  // Cache the results table element for reuse
+  // Cache reusable DOM elements
   const resultsTable = document.getElementById("tbl");
+  const errorMsg = document.getElementById("errorMsg");
 
   // Executes on each button click
   function doFind() {
     // Display loading gif to provide the user feedback on search progress
     calciteLoader.hidden = false;
+    errorMsg.textContent = "";
     // Set the search text to the value of the input box
     params.searchText = document.getElementById("inputTxt").value;
     // The find() performs a LIKE SQL query based on the provided text value
@@ -91,3 +93,4 @@ require(["esri/rest/find", "esri/rest/support/FindParameters"], function (find, 
   // Run doFind() when button is clicked
   document.getElementById("findBtn").addEventListener("click", doFind);
 });
+
